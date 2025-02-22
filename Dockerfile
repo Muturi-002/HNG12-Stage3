@@ -26,9 +26,9 @@ RUN apk add --no-cache --virtual .security-deps \
   openssl \
   libcrypto3
 
-# Install AWS CLI and kubectl
-COPY scripts/install-awscli.sh scripts/install-kubectl.sh /tmp/
-RUN /tmp/install-awscli.sh && \
+# Install OCI CLI and kubectl
+COPY scripts/install-ocicli.sh scripts/install-kubectl.sh /tmp/
+RUN /tmp/install-ocicli.sh && \
   /tmp/install-kubectl.sh && \
   rm -f /tmp/install-*.sh && \
   rm -rf /var/cache/apk/*
@@ -41,16 +41,14 @@ COPY deployments/ ./deployments/
 # Security hardening
 RUN find ./scripts/ -type f \( -name '*.sh' -o -name '*.py' \) -exec chmod 0755 {} + && \
   adduser -D -u 1001 backenduser && \
-  mkdir -p /home/backenduser/.kube/manual /home/backenduser/.aws && \
-  chown -R backenduser:backenduser /app /home/backenduser/.kube /home/backenduser/.aws && \
+  mkdir -p /home/backenduser/.kube/ /home/backenduser/.oci && \
+  chown -R backenduser:backenduser /app /home/backenduser/.kube /home/backenduser/.oci && \
   chmod 0755 /home/backenduser && \
-  chmod 0700 /home/backenduser/.kube /home/backenduser/.aws && \
-  chmod 0755 /home/backenduser/.kube/manual
+  chmod 0700 /home/backenduser/.kube /home/backenduser/.oci && \
+  chmod 0755 /home/backenduser/.kube/
 
 ENV KUBECONFIG=/home/backenduser/.kube/config \
-  AWS_CONFIG_FILE=/home/backenduser/.aws/config \
-  AWS_SHARED_CREDENTIALS_FILE=/home/backenduser/.aws/credentials \
-  AWS_EC2_METADATA_DISABLED=true \
+  OCI_CONFIG_FILE=/home/backenduser/.oci/config \
   PATH="/app/scripts:${PATH}" \
   GIT_SSL_NO_VERIFY="false"
 
