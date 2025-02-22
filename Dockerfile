@@ -11,19 +11,15 @@ FROM alpine:3.18
 WORKDIR /app
 
 # Install core dependencies
-FROM alpine:latest
-
-# Use alternative mirror, update repo, and install packages
-RUN echo "http://dl-8.alpinelinux.org/alpine/latest-stable/main" > /etc/apk/repositories && \
-    apk update && apk add --no-cache \
-    ca-certificates \
-    curl \
-    python3 \
-    py3-pip \
-    git \
-    bash \
-    jq \
-    libc6-compat
+RUN apk update && apk add --no-cache \
+  ca-certificates \
+  curl \
+  python3 \
+  py3-pip \
+  git \
+  bash \
+  jq \
+  libc6-compat
 
 # Install security tools
 RUN apk add --no-cache --virtual .security-deps \
