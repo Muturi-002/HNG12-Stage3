@@ -2,19 +2,19 @@
 set -eo pipefail
 
 # Configuration paths
-AWS_CONFIG_DIR="/home/backenduser/.kube/aws"
+OCI_CONFIG_DIR="/home/backenduser/.kube/"
 MANUAL_CONFIG_DIR="/home/backenduser/.kube/manual"
-AWS_CONFIG="${AWS_CONFIG_DIR}/config"
+OCI_CONFIG="${OCI_CONFIG_DIR}/config"
 MANUAL_CONFIG="${MANUAL_CONFIG_DIR}/config"
 
 # Ensure directories exist
-mkdir -p "${AWS_CONFIG_DIR}" "${MANUAL_CONFIG_DIR}"
+mkdir -p "${OCI_CONFIG_DIR}" "${MANUAL_CONFIG_DIR}"
 
-if [ "$KUBECONFIG_MODE" = "aws" ]; then
-  echo "Initializing AWS EKS configuration..."
+if [ "$KUBECONFIG_MODE" = "oci" ]; then
+  echo "Initializing OCI OKE configuration..."
   
-  # Validate required AWS variables
-  required_vars=(AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_DEFAULT_REGION KUBE_CLUSTER_NAME)
+  # Validate required OCI variables
+  required_vars=(OCI_TENANCY_OCID OCI_USER_OCID OCI_REGION OCI_FINGERPRINT OCI_KEY_FILE OKE_CLUSTER_NAME)
   for var in "${required_vars[@]}"; do
       if [[ -z "${!var}" ]]; then
           echo "ERROR: Missing required environment variable $var" >&2
@@ -22,27 +22,37 @@ if [ "$KUBECONFIG_MODE" = "aws" ]; then
       fi
   done
   
-  # Clean existing AWS config
-  rm -f "${AWS_CONFIG}"
+  # Clean existing OCI config
+  rm -f "${OCI_CONFIG}"
   
-  # Configure AWS CLI
-  aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
-  aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
-  aws configure set default.region ${AWS_DEFAULT_REGION}
+  # Configure OCI CLI
+  oci configure set oci_tenancy ${OCI_TENANCY_OCID}
+  oci configure set oci_user ${OCI_USER_OCID}
+  oci configure set default.region ${OCI_REGION}
+  oci configure set fingerprint ${OCI_FINGERPRINT}
+  oci configure set key_file ${OCI_KEY_FILE}
 
-  # Verify EKS cluster exists
-  if ! aws eks describe-cluster --name ${KUBE_CLUSTER_NAME} >/dev/null; then
-      echo "ERROR: Failed to access EKS cluster '${KUBE_CLUSTER_NAME}'" >&2
+  # Verify OKE cluster exists
+  if ! oci ce cluster get --cluster-id $(oci ce cluster list --name ${OKE_CLUSTER_NAME} --query 'data[0].id' --raw-output) >/dev/null; then
+      echo "ERROR: Failed to access OKE cluster '${OKE_CLUSTER_NAME}'" >&2
       exit 1
   fi
   
   # Generate fresh config
-  aws eks update-kubeconfig \
-    --name "${KUBE_CLUSTER_NAME}" \
-    --region "${AWS_DEFAULT_REGION}" \
-    --kubeconfig "${AWS_CONFIG}"
+  # Backup existing kubeconfig if it exists
+  if [ -f "${OCI_CONFIG}" ]; then
+    cp "${OCI_CONFIG}" "${OCI_CONFIG}.bak"
+    echo "Existing kubeconfig backed up to ${OCI_CONFIG}.bak"
+  fi
+
+  # Generate fresh kubeconfig
+  oci ce cluster create-kubeconfig \
+    --cluster-id $(oci ce cluster list --name ${OKE_CLUSTER_NAME} --query 'data[0].id' --raw-output) \
+    --file "${OCI_CONFIG}" \
+    --region "${OCI_REGION}" \
+    --token-version 2.0.0
     
-  export KUBECONFIG="${AWS_CONFIG}"
+  export KUBECONFIG="${OCI_CONFIG}"
 
 elif [ "$KUBECONFIG_MODE" = "manual" ]; then
   echo "Using manual kubeconfig..."
