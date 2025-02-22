@@ -5,12 +5,13 @@ services:
     image: backendim-brain
     build: .
     environment:
-      - KUBECONFIG_MODE=${KUBECONFIG_MODE:-aws}  # Explicit mode declaration
+      - KUBECONFIG_MODE=${KUBECONFIG_MODE:-oci}  # Explicit mode declaration
       - KUBECONFIG_FILE=${KUBECONFIG_FILE:-/dev/null}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
-      - KUBE_CLUSTER_NAME=${KUBE_CLUSTER_NAME}
+      - OCI_TENANCY_OCID=${OCI_TENANCY_OCID}
+      - OCI_USER_OCID=${OCI_USER_OCID}
+      - OCI_FINGERPRINT=${OCI_FINGERPRINT}
+      - OCI_REGION=${OCI_REGION}
+      - OKE_CLUSTER_NAME=${OKE_CLUSTER_NAME}
     expose:
       - "8080"
     ports:
