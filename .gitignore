@@ -1,4 +1,4 @@
-*.key
+*.key*
 *.pem
 .aider*
 repos
