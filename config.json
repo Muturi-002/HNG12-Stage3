@@ -1,6 +1,6 @@
 {
-  "ws_url": "ws://brain.obimadu.pro/ws",
-  "repo_url": "https://git.obimadu.pro/backend.im/fastapi-app",
+  "ws_url": "ws://<ip-address of instance containing repo>/ws",
+  "repo_url": "<url-to-repo-in-git-server", 
   "user_id": "user-14",
   "chat_id": "chat-14",
   "test_command": "pytest tests/",
