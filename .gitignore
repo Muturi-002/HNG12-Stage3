@@ -1,5 +1,5 @@
 # Security & credentials
-*.key
+*.key*
 *.pem
 *.env
 *.env.local
