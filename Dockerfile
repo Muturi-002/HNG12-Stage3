@@ -11,7 +11,7 @@ FROM alpine:3.19
 WORKDIR /app
 
 # Install core dependencies
-RUN apk add --no-cache \
+RUN apk update && apk add --no-cache \
   ca-certificates \
   curl \
   python3 \
