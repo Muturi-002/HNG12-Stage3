@@ -7,7 +7,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o /backendim-brain ./cmd/server
 
 # Runtime stage
-FROM alpine:3.18
+FROM alpine:3.19
 WORKDIR /app
 
 # Install core dependencies
