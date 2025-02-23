@@ -151,6 +151,8 @@ backend.im-infra/
 
 ```bash
 git clone https://github.com/Muturi-002/HNG12-Stage3.git
+# if you want to use AWS: 
+  # git clone https://github.com/obiMadu/backend.im-infra
 cd HNG12-Stage3
 
 # remove upstream branch 
