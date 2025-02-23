@@ -52,6 +52,7 @@ AWS_SECRET_ACCESS_KEY=secret
 AWS_DEFAULT_REGION=us-west-2
 KUBE_CLUSTER_NAME=prod-cluster
 ```
+**!! This section of the project will be done using Oracle Cloud Infrastructure OKE.**
 
 ### 2. Manual Kubeconfig Mode
 **For**: Non-AWS clusters or pre-configured access
@@ -149,8 +150,11 @@ backend.im-infra/
 ### 1. Clone and Prepare
 
 ```bash
-git clone https://github.com/obiMadu/backend.im-infra
-cd backend.im-infra
+git clone https://github.com/Muturi-002/HNG12-Stage3.git
+cd HNG12-Stage3
+
+# remove upstream branch 
+git remove remote upstream
 ```
 
 ### 2. Server Setup
@@ -187,8 +191,8 @@ python3 scripts/client.py
 
 ```json
 {
-  "ws_url": "ws://your-server-url/ws",
-  "repo_url": "https://github.com/your/repo.git",
+  "ws_url": "ws://<ip-address of instance containing repo>/ws",
+  "repo_url": "<url-to-repo-in-git-server", 
   "user_id": "your-user-id",
   "chat_id": "your-chat-id",
   "project_type": "fastapi",
